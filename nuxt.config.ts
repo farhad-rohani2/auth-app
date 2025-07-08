@@ -2,5 +2,14 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint']
+  modules: ['@nuxt/eslint'],
+  css: [
+    'bootstrap/dist/css/bootstrap.css',
+    'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+  ],
+  plugins: [
+      '@/plugins/bootstrap.js',
+    { src: '@/plugins/localStorage.client.js', mode: 'client' }
+
+  ]
 })
