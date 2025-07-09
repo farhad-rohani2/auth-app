@@ -21,19 +21,30 @@
         </b-form-group>
 
         <div class="d-flex justify-content-center">
-          <b-button
-              type="submit"
-              variant="success"
-              class="w-50 mt-3 mx-auto"
-              :disabled="authLoading"
-          >
+          <b-button-group class="w-100 mt-3 mx-auto">
+
+            <b-button
+                variant="secondary"
+                class="w-50"
+                @click="goToLogin"
+            >
+              ورود
+            </b-button>
+
+            <b-button
+                type="submit"
+                variant="success"
+                class="w-50 "
+                :disabled="authLoading"
+            >
             <span v-if="authLoading">
               <b-spinner small type="grow" class="me-2"/> در حال ثبت‌نام...
             </span>
-            <span v-else>ثبت‌نام</span>
-          </b-button>
+              <span v-else>ثبت‌نام</span>
+            </b-button>
+          </b-button-group>
         </div>
-        <div class="text-danger mt-2" v-if="error">{{ error }}</div>
+        <div class="text-danger mt-2" v-if="authError">{{ authError }}</div>
       </b-form>
     </b-card>
   </div>
@@ -44,7 +55,10 @@ import useVuelidate from '@vuelidate/core'
 import {required, email, minLength, sameAs} from '@vuelidate/validators'
 import ValidationErrors from '@/components/ValidationErrors.vue'
 import {mapActions, mapGetters} from 'vuex'
-
+import {navigateTo} from "#app";
+definePageMeta({
+  middleware: ['auth']
+})
 export default {
   components: {ValidationErrors},
   data() {
@@ -52,7 +66,6 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      error: null,
       validations: null
     }
   },
@@ -80,9 +93,12 @@ export default {
     async handleRegister() {
       this.validations.$touch()
       if (this.validations.$invalid) return
-       this.signup({email: this.email, password: this.password})
-          .then(() => this.$router.push('/'));
-    }
+      this.signup({email: this.email, password: this.password})
+          .then(() => this.$router.push('/dashboard'));
+    },
+    goToLogin() {
+      navigateTo('/login')
+    },
   }
 }
 </script>

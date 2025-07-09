@@ -32,6 +32,9 @@ export default {
   computed: {
     ...mapGetters('notifications', ['notification']),
   },
+  mounted() {
+    this.nuxtClientInit()
+  },
   watch: {
     'notification.message': {
       immediate: true,
@@ -44,6 +47,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['clearNotice']),
+    ...mapActions('auth', ['nuxtClientInit']),
     handleHidden() {
       this.show = false
       this.clearNotice()

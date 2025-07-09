@@ -1,60 +1,99 @@
 <template>
-  <div class="container mt-5">
-    <b-card title="ورود" class="mx-auto" style="max-width: 400px;">
+  <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <b-card title="ورود" class="mx-auto w-100 max-w-400" align="end">
       <b-form @submit.prevent="handleLogin">
+        <!-- ایمیل -->
         <b-form-group label="ایمیل">
-          <b-form-input
-              v-model="email"
-              type="email"
-              required
-              placeholder="ایمیل خود را وارد کنید"
-          ></b-form-input>
+          <b-form-input v-model="email" type="email" required></b-form-input>
+          <ValidationErrors :validation="v$.email" />
         </b-form-group>
 
+        <!-- رمز عبور -->
         <b-form-group label="رمز عبور">
-          <b-form-input
-              v-model="password"
-              type="password"
-              required
-              placeholder="رمز عبور"
-          ></b-form-input>
+          <b-form-input v-model="password" type="password" required></b-form-input>
+          <ValidationErrors :validation="v$.password" />
         </b-form-group>
 
-        <b-button type="submit" variant="primary" class="w-100">ورود</b-button>
-      </b-form>
+        <div class="d-flex justify-content-center">
+          <b-button-group class="w-100 mt-3 mx-auto">
+            <b-button
+                type="submit"
+                variant="primary"
+                class="w-50"
+                :disabled="authLoading"
+            >
+              <span v-if="authLoading">
+                <b-spinner small type="grow" class="me-2" /> در حال ورود...
+              </span>
+              <span v-else>ورود</span>
+            </b-button>
 
-      <div v-if="error" class="mt-3 text-danger text-center">
-        {{ error }}
-      </div>
+            <b-button
+                variant="secondary"
+                class="w-50"
+                @click="goToRegister"
+            >
+              ثبت‌نام
+            </b-button>
+          </b-button-group>
+        </div>
+
+        <div class="text-danger mt-2" v-if="authError">{{ authError }}</div>
+      </b-form>
     </b-card>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: null
-    }
-  },
-  methods: {
-    async handleLogin() {
-      try {
-        this.error = null
-        // درخواست فرضی
-        const response = await $fetch('/api/login', {
-          method: 'POST',
-          body: { email: this.email, password: this.password }
-        })
+<script setup>
+import { ref, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useVuelidate } from '@vuelidate/core'
+import { required, email as emailValidator, minLength } from '@vuelidate/validators'
+import { useRouter, useRoute, navigateTo } from '#imports'
 
-        console.log('ورود موفق:', response)
-        await navigateTo('/dashboard')
-      } catch (err) {
-        this.error = 'ورود ناموفق. ایمیل یا رمز اشتباه است.'
-      }
-    }
+import ValidationErrors from '@/components/ValidationErrors.vue'
+
+definePageMeta({
+  middleware: ['auth']
+})
+
+const store = useStore()
+const router = useRouter()
+
+const email = ref('')
+const password = ref('')
+
+const rules = {
+  email: { required, email: emailValidator },
+  password: { required, minLength: minLength(6) }
+}
+
+const v$ = useVuelidate(rules, { email, password })
+
+const authLoading = computed(() => store.getters['auth/authLoading'])
+const authError = computed(() => store.getters['auth/authError'])
+
+const handleLogin = async () => {
+  v$.value.$touch()
+  if (v$.value.$invalid) return
+
+  await store.dispatch('auth/login', {
+    email: email.value,
+    password: password.value
+  })
+
+  if (!authError.value) {
+    router.push('/dashboard')
   }
 }
+
+const goToRegister = () => {
+  router.push('/register')
+}
 </script>
+
+<style scoped>
+.max-w-400 {
+  max-width: 400px;
+}
+</style>

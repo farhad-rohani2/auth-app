@@ -10,10 +10,7 @@ export default defineNuxtConfig({
         'bootstrap/dist/css/bootstrap.css',
         'bootstrap-vue-next/dist/bootstrap-vue-next.css'
     ],
-    plugins: [
-        // {src: '@/plugins/localStorage.client.js', mode: 'client'}
-        { src: '~/plugins/firebase.js', mode: 'client' },
-    ],
+    plugins: [],
     pages: true,
     // debug: true
 })
