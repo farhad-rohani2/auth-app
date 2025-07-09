@@ -5,28 +5,27 @@
         <!-- ایمیل -->
         <b-form-group label="ایمیل">
           <b-form-input v-model="email" type="email" required></b-form-input>
-          <ValidationErrors :validation="validations.email"/>
+          <ValidationErrors :validation="validation.email"/>
         </b-form-group>
 
         <!-- رمز عبور -->
         <b-form-group label="رمز عبور">
           <b-form-input v-model="password" type="password" required></b-form-input>
-          <ValidationErrors :validation="validations.password"/>
+          <ValidationErrors :validation="validation.password"/>
         </b-form-group>
 
         <!-- تکرار رمز عبور -->
         <b-form-group label="تکرار رمز عبور">
           <b-form-input v-model="confirmPassword" type="password" required></b-form-input>
-          <ValidationErrors :validation="validations.confirmPassword"/>
+          <ValidationErrors :validation="validation.confirmPassword"/>
         </b-form-group>
 
         <div class="d-flex justify-content-center">
           <b-button-group class="w-100 mt-3 mx-auto">
-
             <b-button
                 variant="secondary"
                 class="w-50"
-                @click="goToLogin"
+                @click="navigateTo('/login')"
             >
               ورود
             </b-button>
@@ -34,12 +33,12 @@
             <b-button
                 type="submit"
                 variant="success"
-                class="w-50 "
+                class="w-50"
                 :disabled="authLoading"
             >
-            <span v-if="authLoading">
-              <b-spinner small type="grow" class="me-2"/> در حال ثبت‌نام...
-            </span>
+              <span v-if="authLoading">
+                <b-spinner small type="grow" class="me-2"/> در حال ثبت‌نام...
+              </span>
               <span v-else>ثبت‌نام</span>
             </b-button>
           </b-button-group>
@@ -50,58 +49,58 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import {ref, computed} from 'vue'
+import {navigateTo} from '#app'
+import {useStore} from 'vuex'
 import useVuelidate from '@vuelidate/core'
-import {required, email, minLength, sameAs} from '@vuelidate/validators'
+import {required, email as emailValidator, minLength, sameAs} from '@vuelidate/validators'
 import ValidationErrors from '@/components/ValidationErrors.vue'
-import {mapActions, mapGetters} from 'vuex'
-import {navigateTo} from "#app";
+
 definePageMeta({
   middleware: ['auth']
 })
-export default {
-  components: {ValidationErrors},
-  data() {
-    return {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      validations: null
-    }
+
+const store = useStore()
+
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+
+const rules = computed(() => ({
+  email: {required, emailValidator},
+  password: {required, minLength: minLength(6)},
+  confirmPassword: {
+    required,
+    sameAs: sameAs(password, 'رمز عبور'),
   },
-  computed: {
-    ...mapGetters('auth', ['authLoading', 'authError']),
-  },
-  validations() {
-    return {
-      email: {required, email},
-      password: {
-        required,
-        minLength: minLength(6)
-      },
-      confirmPassword: {
-        required,
-        sameAsPassword: sameAs(computed(() => this.password)),
-      }
-    }
-  },
-  created() {
-    this.validations = useVuelidate(this.$options.validations.call(this), this)
-  },
-  methods: {
-    ...mapActions('auth', ['signup']),
-    async handleRegister() {
-      this.validations.$touch()
-      if (this.validations.$invalid) return
-      this.signup({email: this.email, password: this.password})
-          .then(() => this.$router.push('/dashboard'));
-    },
-    goToLogin() {
-      navigateTo('/login')
-    },
+}))
+
+const validation = useVuelidate(rules, {
+  email,
+  password,
+  confirmPassword
+})
+
+const authLoading = computed(() => store.getters['auth/authLoading'])
+const authError = computed(() => store.getters['auth/authError'])
+
+const handleRegister = async () => {
+  validation.value.$touch()
+  if (validation.value.$invalid) return
+
+
+  await store.dispatch('auth/signup', {
+    email: email.value,
+    password: password.value
+  })
+
+  if (!authError.value) {
+    navigateTo('/dashboard')
   }
 }
 </script>
+
 <style>
 .card-title {
   text-align: center;

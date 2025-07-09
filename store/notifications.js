@@ -7,7 +7,6 @@ export default {
     }),
     mutations: {
         SET_NOTIFICATION(state, { message, title = 'پیام سیستم', variant = 'info' }) {
-            console.log(message, title, variant)
             state.message = message
             state.title = title
             state.variant = variant

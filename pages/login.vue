@@ -5,13 +5,13 @@
         <!-- ایمیل -->
         <b-form-group label="ایمیل">
           <b-form-input v-model="email" type="email" required></b-form-input>
-          <ValidationErrors :validation="v$.email" />
+          <ValidationErrors :validation="validation.email" />
         </b-form-group>
 
         <!-- رمز عبور -->
         <b-form-group label="رمز عبور">
           <b-form-input v-model="password" type="password" required></b-form-input>
-          <ValidationErrors :validation="v$.password" />
+          <ValidationErrors :validation="validation.password" />
         </b-form-group>
 
         <div class="d-flex justify-content-center">
@@ -31,7 +31,7 @@
             <b-button
                 variant="secondary"
                 class="w-50"
-                @click="goToRegister"
+                @click="navigateTo('/register')"
             >
               ثبت‌نام
             </b-button>
@@ -49,7 +49,7 @@ import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email as emailValidator, minLength } from '@vuelidate/validators'
-import { useRouter, useRoute, navigateTo } from '#imports'
+import {  navigateTo } from '#app'
 
 import ValidationErrors from '@/components/ValidationErrors.vue'
 
@@ -58,7 +58,6 @@ definePageMeta({
 })
 
 const store = useStore()
-const router = useRouter()
 
 const email = ref('')
 const password = ref('')
@@ -68,14 +67,14 @@ const rules = {
   password: { required, minLength: minLength(6) }
 }
 
-const v$ = useVuelidate(rules, { email, password })
+const validation = useVuelidate(rules, { email, password })
 
 const authLoading = computed(() => store.getters['auth/authLoading'])
 const authError = computed(() => store.getters['auth/authError'])
 
 const handleLogin = async () => {
-  v$.value.$touch()
-  if (v$.value.$invalid) return
+  validation.value.$touch()
+  if (validation.value.$invalid) return
 
   await store.dispatch('auth/login', {
     email: email.value,
@@ -83,12 +82,8 @@ const handleLogin = async () => {
   })
 
   if (!authError.value) {
-    router.push('/dashboard')
+    navigateTo('/dashboard')
   }
-}
-
-const goToRegister = () => {
-  router.push('/register')
 }
 </script>
 
