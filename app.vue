@@ -33,10 +33,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['currentUser']),
     ...mapGetters('notifications', ['notification']),
   },
   mounted() {
     this.nuxtClientInit()
+    console.log(this.currentUser)
   },
   watch: {
     'notification.message': {

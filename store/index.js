@@ -1,7 +1,6 @@
 import { createStore } from 'vuex'
 import auth from './auth'
 import notifications from "./notifications.js";
-// import persist from "~/plugins/persist.js";
 
 
 export const store = createStore({
@@ -9,5 +8,12 @@ export const store = createStore({
         auth,
         notifications
     },
-    // plugins: [persist]
+    actions: {
+        async nuxtServerInit({ commit }, { ssrContext }) {
+            const user = ssrContext?.event?.context?.user
+            if (user) {
+                commit('auth/SET_USER', user)
+            }
+        }
+    }
 })

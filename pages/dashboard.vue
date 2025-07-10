@@ -26,12 +26,17 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 
 definePageMeta({
-  middleware: ['auth-dashboard']
+  middleware: [
+      // 'auth-dashboard',
+    // 'auth-server',
+      // 'auth-ssr'
+  ]
 })
 
 
 
 const store = useStore()
+console.log('🔥 کاربر در استور:', store.state.auth.user)
 
 const isAuthenticated = computed(() => store.getters['auth/isAuthenticated'])
 const userEmail = computed(() => store.getters['auth/currentUser']?.email || 'کاربر')

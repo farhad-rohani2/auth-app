@@ -13,4 +13,7 @@ export default defineNuxtConfig({
     plugins: [],
     pages: true,
     // debug: true
+    // serverMiddleware: [
+    //     // { path: '/dashboard', handler: '~/server/middleware/auth.js' }
+    // ]
 })

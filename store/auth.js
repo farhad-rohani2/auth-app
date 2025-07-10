@@ -66,6 +66,13 @@ export default {
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 commit("SET_USER", userCredential.user);
+                const idToken = await userCredential.user.getIdToken()
+
+                await $fetch('/api/session', {
+                    method: 'POST',
+                    body: {token: idToken},
+                    credentials: 'include',
+                })
                 dispatch('notifications/notifySuccess', 'ورود با موفقیت انجام شد!', { root: true })
             } catch (error) {
                 commit("SET_AUTH_ERROR", error.message);
