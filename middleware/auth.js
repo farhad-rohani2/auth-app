@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
          isAuthenticated = store.getters['auth/isAuthenticated']
     }
 
-    if (isAuthenticated && (to.path == '/login' || to.path === '/signup')) {
+    if (isAuthenticated && (to.path == '/login' || to.path === '/register')) {
         return navigateTo('/dashboard');
     }
 })
