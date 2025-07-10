@@ -8,7 +8,7 @@
         <div v-if="isAuthenticated">
           <p>خوش آمدید، <strong>{{ userEmail }}</strong>!</p>
           <div class="d-flex justify-content-center">
-            <b-button variant="danger" @click="handleLogout" :disabled="authLoading">
+            <b-button variant="danger" :disabled="authLoading" @click="handleLogout" >
               <span v-if="authLoading">
                 <b-spinner small type="grow" class="me-2" /> در حال خروج...
               </span>
@@ -28,7 +28,7 @@ import { computed } from 'vue'
 definePageMeta({
   middleware: [
       // 'auth-dashboard',
-    // 'auth-server',
+    'auth-server',
       // 'auth-ssr'
   ]
 })
