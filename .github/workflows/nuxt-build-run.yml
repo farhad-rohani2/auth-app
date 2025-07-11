@@ -1,0 +1,34 @@
+name: Build & Run Nuxt App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Nuxt app
+        run: npm run build
+
+      - name: Start Nuxt server (for 30s test)
+        run: |
+          npm install -g wait-on
+          node .output/server/index.mjs &
+          wait-on http://localhost:3000
+          echo "✅ Nuxt app started successfully!"
+          sleep 30
