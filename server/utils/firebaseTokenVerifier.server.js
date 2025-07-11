@@ -8,8 +8,6 @@ import jwt from 'jsonwebtoken'
 
 const publicKeysPath = join(process.cwd(), 'server/utils/publicKeys.json')
 const publicKeys = JSON.parse(readFileSync(publicKeysPath, 'utf-8'))
-const authFirebaseAdminSdkPath = join(process.cwd(), 'server/utils/authFirebaseAdminSdk.json')
-const authFirebaseAdminSdk = JSON.parse(readFileSync(authFirebaseAdminSdkPath, 'utf-8'))
 
 /**
  * استخراج کلید مناسب بر اساس kid
@@ -34,9 +32,11 @@ export async function verifyIdTokenLocally(token) {
         throw new Error('Public key not found for provided kid')
     }
 
+    const config = useRuntimeConfig();
+
     return jwt.verify(token, key, {
         algorithms: ['RS256'],
-        issuer: `https://securetoken.google.com/${authFirebaseAdminSdk.project_id}`,
-        audience: authFirebaseAdminSdk.project_id,
+        issuer: `https://securetoken.google.com/${config.project_id}`,
+        audience: config.project_id,
     })
 }

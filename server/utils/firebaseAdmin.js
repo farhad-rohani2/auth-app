@@ -1,16 +1,17 @@
 // server/utils/firebaseAdmin.js
 
 const admin = require('firebase-admin')
-const { readFileSync } = require('fs')
-const { join } = require('path')
-
-const serviceAccountPath = join(process.cwd(), 'server/utils/authFirebaseAdminSdk.json')
-const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf-8'))
 
 if (admin.apps.length === 0) {
+    const config = useRuntimeConfig();
+
     admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-    })
+        credential: admin.credential.cert({
+            projectId: config.project_id,
+            clientEmail: config.client_email,
+            privateKey: config.private_key
+        }),
+    });
 }
 
 module.exports = {
