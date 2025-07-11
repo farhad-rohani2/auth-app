@@ -58,7 +58,7 @@ import {required, email as emailValidator, minLength, sameAs} from '@vuelidate/v
 import ValidationErrors from '@/components/ValidationErrors.vue'
 
 definePageMeta({
-  middleware: ['auth']
+  middleware: [ 'auth-server','auth-login-and-register']
 })
 
 const store = useStore()

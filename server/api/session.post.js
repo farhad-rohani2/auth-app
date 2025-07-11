@@ -1,7 +1,7 @@
 // server/api/session.post.js
 
 import { readBody, setCookie } from 'h3'
-import { verifyIdTokenLocally } from '@/server/utils/firebaseTokenVerifier'
+import { verifyIdTokenLocally } from '@/server/utils/firebaseTokenVerifier.server.js'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)

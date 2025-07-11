@@ -2,17 +2,20 @@ import {useStore} from "vuex";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-    if (to.path !== '/dashboard') return;
+    if (to.path !== '/') return;
 
     const authUser = useState('authUser').value;
     const isAuthenticatedInserver = authUser && Object.keys(authUser ?? {}).length !== 0;
 
-    if (process.server && !isAuthenticatedInserver) return navigateTo('/login');
+    if (process.server) {
+        return !isAuthenticatedInserver ? navigateTo('/login') : navigateTo('/dashboard');
+    }
 
     if (process.client) {
-        const store = useStore();
+        const store = useStore()
         if (isAuthenticatedInserver) store.dispatch('auth/setUser', authUser);
         let isAuthenticated = store.getters['auth/isAuthenticated']
-        if (!isAuthenticated) return navigateTo('/login');
+        return isAuthenticated ? navigateTo('/dashboard') : navigateTo('/login');
     }
+
 })

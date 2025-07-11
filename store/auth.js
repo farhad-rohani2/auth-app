@@ -42,6 +42,9 @@ export default {
     },
 
     actions: {
+        setUser({commit}, user) {
+            commit('SET_USER', user);
+        },
         nuxtClientInit({commit}) {
             commit('LOAD_FROM_STORAGE')
         },
@@ -88,6 +91,8 @@ export default {
             try {
                 await signOut(auth);
                 commit("SET_USER", null);
+                console.log('xxxxxxxxxx')
+                await $fetch('/api/logout', { method: 'POST' })
                 dispatch('notifications/notifySuccess', 'خروج با موفقیت انجام شد!', { root: true })
             } catch (error) {
                 commit("SET_AUTH_ERROR", error.message);

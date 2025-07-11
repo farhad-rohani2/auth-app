@@ -1,25 +1,22 @@
-import { getCookie } from 'h3'
+import {getCookie} from 'h3'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    console.log('aaaaaaaaaaaaaa')
     if (process.server) {
+        const {verifyIdTokenLocally} = await import('@/server/utils/firebaseTokenVerifier.server')
+
         const event = useRequestEvent()
-        const { adminAuth } = await import('@/server/utils/firebaseAdmin')
-
         const token = getCookie(event, 'session_token')
+        if (!token) return;
 
-        console.log('[middleware] token', token)
-        if (!token) {
-            return navigateTo('/login')
-
-        }
         try {
-            const decoded = await adminAuth.verifyIdToken(token)
-            console.log('[middleware] decoded', decoded)
-            console.log(decoded)
+            const decoded = await verifyIdTokenLocally(token)
             event.context.user = decoded
+            const authUser = useState('authUser', () => null)
+            authUser.value = decoded
         } catch (e) {
-            return navigateTo('/login')
+            console.log('[middleware] error', e)
+            // if (to.path !== '/login') return navigateTo('/login');
+
         }
     }
 })

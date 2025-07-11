@@ -1,5 +1,5 @@
 <template>
-  <ClientOnly>
+<!--  <ClientOnly>-->
     <NuxtPage/>
     <b-toast
         v-model:show="show"
@@ -19,7 +19,7 @@
         class="position-fixed top-0 end-0 m-3 z-50 text-end"
         @hidden="handleHidden"
     />
-  </ClientOnly>
+<!--  </ClientOnly>-->
 
 </template>
 
@@ -37,8 +37,13 @@ export default {
     ...mapGetters('notifications', ['notification']),
   },
   mounted() {
-    this.nuxtClientInit()
-    console.log(this.currentUser)
+    // console.log('Component mounted.')
+    // const authUser = useState('authUser');
+    // console.log(authUser)
+    // console.log(authUser._value)
+    //
+    // // this.setUser(authUser)
+    // console.log(this.currentUser)
   },
   watch: {
     'notification.message': {
@@ -52,7 +57,7 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['clearNotice']),
-    ...mapActions('auth', ['nuxtClientInit']),
+    ...mapActions('auth', ['setUser']),
     handleHidden() {
       this.show = false
       this.clearNotice()

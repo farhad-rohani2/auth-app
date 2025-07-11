@@ -54,7 +54,7 @@ import {  navigateTo } from '#app'
 import ValidationErrors from '@/components/ValidationErrors.vue'
 
 definePageMeta({
-  middleware: ['auth']
+  middleware: [ 'auth-server','auth-login-and-register']
 })
 
 const store = useStore()
@@ -80,8 +80,8 @@ const handleLogin = async () => {
     email: email.value,
     password: password.value
   })
-
   if (!authError.value) {
+    console.log(authError.value)
     navigateTo('/dashboard')
   }
 }

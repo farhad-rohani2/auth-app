@@ -9,7 +9,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 definePageMeta({
-  middleware: ['auth-root']
+  middleware: [ 'auth-server','auth-index']
 })
 export default {
   computed: {
