@@ -42,8 +42,6 @@ const userEmailInServer = computed(() => useState('authUser')?.value?.email || '
 const authLoading = computed(() => store.getters['auth/authLoading'])
 
 const handleLogout = async () => {
-  await store.dispatch('auth/logout')
-  console.log('dddddddd')
-  await navigateTo('/login')
+  await store.dispatch('auth/logout').then(()=> navigateTo('/login'))
 }
 </script>

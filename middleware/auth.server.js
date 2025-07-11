@@ -1,21 +1,32 @@
 import {getCookie} from 'h3'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    if (process.server) {
-        const {verifyIdTokenLocally} = await import('@/server/utils/firebaseTokenVerifier.server')
-
+    function setUser(user) {
         const event = useRequestEvent()
-        const token = getCookie(event, 'session_token')
-        if (!token) return;
-
+        event.context.user = user
+        let authUser = useState('authUser', () => null)
+        authUser.value = user
+        let isAuthenticatedInServer = useState('isAuthenticatedInServer', () => null)
+        isAuthenticatedInServer.value = user && Object.keys(user).length !== 0;
+    }
+    if (import.meta.server) {
+        const event = useRequestEvent()
         try {
+
+            const {verifyIdTokenLocally} = await import('@/server/utils/firebaseTokenVerifier.server')
+            const token = getCookie(event, 'session_token')
+            if (!token){
+               setUser({})
+                if (to.path !== '/login') return navigateTo('/login');
+            }
+
+
             const decoded = await verifyIdTokenLocally(token)
-            event.context.user = decoded
-            const authUser = useState('authUser', () => null)
-            authUser.value = decoded
+            setUser(decoded)
         } catch (e) {
-            console.log('[middleware] error', e)
-            // if (to.path !== '/login') return navigateTo('/login');
+            console.log('middleware/auth.server.ir', e)
+            setUser({})
+            if (to.path !== '/login') return navigateTo('/login');
 
         }
     }

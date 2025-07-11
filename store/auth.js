@@ -27,6 +27,13 @@ export default {
             if (process.client) {
                 localStorage.setItem('user', JSON.stringify(user))
             }
+
+            let authUser = useState('authUser', () => null)
+            authUser.value = user
+
+            let isAuthenticatedInServer = useState('isAuthenticatedInServer', () => null)
+            isAuthenticatedInServer.value =( user && (Object.keys(user).length !== 0));
+
         },
         SET_AUTH_ERROR(state, error) {
             state.authError = error;
@@ -54,6 +61,12 @@ export default {
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 commit("SET_USER", userCredential.user);
+                const idToken = await userCredential.user.getIdToken()
+                await $fetch('/api/session', {
+                    method: 'POST',
+                    body: {token: idToken},
+                    credentials: 'include',
+                })
                 dispatch('notifications/notifySuccess', 'ثبت‌نام با موفقیت انجام شد!', { root: true })
             } catch (error) {
                 commit("SET_AUTH_ERROR", error.message);
@@ -70,7 +83,6 @@ export default {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 commit("SET_USER", userCredential.user);
                 const idToken = await userCredential.user.getIdToken()
-
                 await $fetch('/api/session', {
                     method: 'POST',
                     body: {token: idToken},
@@ -91,7 +103,6 @@ export default {
             try {
                 await signOut(auth);
                 commit("SET_USER", null);
-                console.log('xxxxxxxxxx')
                 await $fetch('/api/logout', { method: 'POST' })
                 dispatch('notifications/notifySuccess', 'خروج با موفقیت انجام شد!', { root: true })
             } catch (error) {

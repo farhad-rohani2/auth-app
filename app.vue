@@ -1,5 +1,4 @@
 <template>
-<!--  <ClientOnly>-->
     <NuxtPage/>
     <b-toast
         v-model:show="show"
@@ -19,8 +18,6 @@
         class="position-fixed top-0 end-0 m-3 z-50 text-end"
         @hidden="handleHidden"
     />
-<!--  </ClientOnly>-->
-
 </template>
 
 <script>
