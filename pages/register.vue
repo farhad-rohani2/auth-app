@@ -89,15 +89,12 @@ const handleRegister = async () => {
   validation.value.$touch()
   if (validation.value.$invalid) return
 
-
   await store.dispatch('auth/signup', {
     email: email.value,
     password: password.value
   })
 
-  if (!authError.value) {
-    navigateTo('/dashboard')
-  }
+  if (!authError.value) navigateTo('/dashboard')
 }
 </script>
 

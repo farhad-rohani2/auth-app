@@ -4,7 +4,6 @@ import {
     signOut,
 } from "firebase/auth";
 
-// import { auth } from '~/plugins/firebase'; // 👈 مستقیم import
 import { auth } from '~/composables/firebaseConfig';
 
 export default {

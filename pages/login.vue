@@ -80,10 +80,7 @@ const handleLogin = async () => {
     email: email.value,
     password: password.value
   })
-  if (!authError.value) {
-    console.log(authError.value)
-    navigateTo('/dashboard')
-  }
+  if (!authError.value) navigateTo('/dashboard')
 }
 </script>
 

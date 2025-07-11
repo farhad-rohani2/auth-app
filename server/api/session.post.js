@@ -1,13 +1,14 @@
 // server/api/session.post.js
 
 import { readBody, setCookie } from 'h3'
-import { verifyIdTokenLocally } from '@/server/utils/firebaseTokenVerifier.server.js'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const { token } = body
 
     try {
+        const {verifyIdTokenLocally} = await import('@/server/utils/firebaseTokenVerifier.server')
+
         const decoded = await verifyIdTokenLocally(token)
 
         setCookie(event, 'session_token', token, {
